@@ -1,78 +1,5 @@
-# Projeto confirmação de senha
-while(True):
-    senha = input(f'Digite uma senha: ')
-    confirmar_senha = input(f'Confirme sua senha: ')
-    if (senha == confirmar_senha):
-        print('Bem vindo e aproveite')
-        break
-
-    else:
-        print('Senhas não são iguais.')
-
-tentativas = 1
-
-for i in range(1, 4):
-    login = input(f'Digite sua senha: ')
-    if (login == senha):
-        print(f'Bem vindo')
-        break
-    
-    print(f'“Senha incorretar. Você tem {tentativas} tentativas até o bloqueio.')
-    tentativas += 1
-print('----------------------- MODO 2 -----------------------')
-
-while True:
-
-    senha = input(('Digite sua senha: '))
-    req_letra_minuscula = 'abcdefghiklmnopqrstuvxzçáàãâéèêíìóòõôúùûüä'
-    req_letra_maiuscula = req_letra_minuscula.upper()
-    req_numeros = '0123456789'
-
-    tem_8_digitos = 0
-    maiuscula = 0
-    minuscula = 0
-    numero = 0
-    caracter_especial = 0
-    if len(senha) >=8: 
-        tem_8_digitos = 1
-    for letra in senha:
-        
-            if letra in req_letra_minuscula:
-                minuscula = 1
-
-            elif letra in req_letra_maiuscula:
-                maiuscula = 1
-            
-            elif letra in req_numeros:
-                numero = 1
-
-            else:
-                caracter_especial = 1
-
-
-
-    total_atendidos = tem_8_digitos + maiuscula + minuscula + numero + caracter_especial
-
-        
-    if len(senha) >= 8:
-        if total_atendidos <= 2:
-            print('Senha fulera')
-        
-        elif total_atendidos <= 4:
-            print('Marromeno Marromeno')
-
-        else:
-            print('Ta de rocha pvt doido')
-            break
-
-    else:
-        print('Tamanho da senha incorreto')
-
-
-
-
-print('----------------------- MODO 3 -----------------------')
-
+import tkinter as tk
+from tkinter import messagebox
 import string
 
 def verifica_senha(senha):
@@ -82,7 +9,7 @@ def verifica_senha(senha):
     req_numeros = set(string.digits)
     req_caracteres_especiais = set(string.punctuation + 'ç')
 
-    # Flags de verificação
+    # Verificações
     tem_8_digitos = len(senha) >= 8
     tem_minuscula = any(char in req_letra_minuscula for char in senha)
     tem_maiuscula = any(char in req_letra_maiuscula for char in senha)
@@ -90,25 +17,91 @@ def verifica_senha(senha):
     tem_especial = any(char in req_caracteres_especiais for char in senha)
 
     # Contagem total de requisitos atendidos
-    total_atendidos = sum([tem_8_digitos, tem_minuscula, tem_maiuscula, tem_numero, tem_especial])
+    total_atendidos = sum([tem_minuscula, tem_maiuscula, tem_numero, tem_especial])
 
     # Verificação da força da senha
-    if tem_8_digitos and total_atendidos <= 2:
-        return 'Senha fraca'
-    elif tem_8_digitos and total_atendidos <= 4:
-        return 'Senha razoável'
-    elif tem_8_digitos and total_atendidos > 4:
-        return 'Senha forte'
-    else:
+    if not tem_8_digitos:
         return 'Senha muito curta'
+    elif total_atendidos <= 2:
+        return 'Senha fraca'
+    elif total_atendidos <= 3:
+        return 'Senha razoável'
+    else:
+        return 'Senha forte'
 
-# Loop para testar senhas até que uma senha forte seja fornecida
-while True:
-    senha = input('Digite sua senha: ')
-    resultado = verifica_senha(senha)
-    print(resultado)
-    if resultado == 'Senha forte':
-        break
+class Application(tk.Tk):
+    def __init__(self):
+        super().__init__()
 
+        self.title("Sistema de Login")
+        self.geometry("500x300")
 
-        
+        self.senha = ""
+        self.tentativas_restantes = 3
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.lbl_instruction = tk.Label(self, text="Crie e confirme sua senha")
+        self.lbl_instruction.pack(pady=10)
+
+        self.lbl_senha = tk.Label(self, text="Senha:")
+        self.lbl_senha.pack()
+        self.entry_senha = tk.Entry(self, show='*')
+        self.entry_senha.pack()
+
+        self.lbl_confirmar_senha = tk.Label(self, text="Confirme a Senha:")
+        self.lbl_confirmar_senha.pack()
+        self.entry_confirmar_senha = tk.Entry(self, show='*')
+        self.entry_confirmar_senha.pack()
+
+        self.btn_criar_senha = tk.Button(self, text="Criar Senha", command=self.criar_senha)
+        self.btn_criar_senha.pack(pady=10)
+
+    def criar_senha(self):
+        senha = self.entry_senha.get()
+        confirmar_senha = self.entry_confirmar_senha.get()
+
+        if senha != confirmar_senha:
+            messagebox.showerror("Erro", "As senhas não são iguais!")
+            return
+
+        resultado = verifica_senha(senha)
+        messagebox.showinfo("Força da Senha", f'Força da senha: {resultado}')
+
+        if resultado == 'Senha forte':
+            self.senha = senha
+            self.login_screen()
+        else:
+            messagebox.showwarning("Aviso", "Por favor, crie uma senha mais forte.")
+
+    def login_screen(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        self.lbl_login_instruction = tk.Label(self, text="Digite sua senha para fazer login")
+        self.lbl_login_instruction.pack(pady=10)
+
+        self.entry_login = tk.Entry(self, show='*')
+        self.entry_login.pack()
+
+        self.btn_login = tk.Button(self, text="Login", command=self.fazer_login)
+        self.btn_login.pack(pady=10)
+
+    def fazer_login(self):
+        login = self.entry_login.get()
+
+        if login == self.senha:
+            messagebox.showinfo("Sucesso", "Bem-vindo!")
+            self.destroy()
+        else:
+            self.tentativas_restantes -= 1
+            if self.tentativas_restantes > 0:
+                messagebox.showerror("Erro", f"Senha incorreta. Você tem {self.tentativas_restantes} tentativa(s) restante(s).")
+            else:
+                messagebox.showerror("Bloqueado", "Sua conta foi bloqueada devido a múltiplas tentativas incorretas.")
+                self.destroy()
+
+if __name__ == "__main__":
+    app = Application()
+    app.mainloop()
