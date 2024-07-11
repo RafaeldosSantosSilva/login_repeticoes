@@ -68,4 +68,47 @@ while True:
     else:
         print('Tamanho da senha incorreto')
 
+
+
+
+print('----------------------- MODO 3 -----------------------')
+
+import string
+
+def verifica_senha(senha):
+    # Requisitos
+    req_letra_minuscula = set(string.ascii_lowercase + 'áàãâéèêíìóòõôúùûüä')
+    req_letra_maiuscula = set(string.ascii_uppercase)
+    req_numeros = set(string.digits)
+    req_caracteres_especiais = set(string.punctuation + 'ç')
+
+    # Flags de verificação
+    tem_8_digitos = len(senha) >= 8
+    tem_minuscula = any(char in req_letra_minuscula for char in senha)
+    tem_maiuscula = any(char in req_letra_maiuscula for char in senha)
+    tem_numero = any(char in req_numeros for char in senha)
+    tem_especial = any(char in req_caracteres_especiais for char in senha)
+
+    # Contagem total de requisitos atendidos
+    total_atendidos = sum([tem_8_digitos, tem_minuscula, tem_maiuscula, tem_numero, tem_especial])
+
+    # Verificação da força da senha
+    if tem_8_digitos and total_atendidos <= 2:
+        return 'Senha fraca'
+    elif tem_8_digitos and total_atendidos <= 4:
+        return 'Senha razoável'
+    elif tem_8_digitos and total_atendidos > 4:
+        return 'Senha forte'
+    else:
+        return 'Senha muito curta'
+
+# Loop para testar senhas até que uma senha forte seja fornecida
+while True:
+    senha = input('Digite sua senha: ')
+    resultado = verifica_senha(senha)
+    print(resultado)
+    if resultado == 'Senha forte':
+        break
+
+
         
