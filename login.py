@@ -19,7 +19,7 @@ for i in range(1, 4):
     
     print(f'“Senha incorretar. Você tem {tentativas} tentativas até o bloqueio.')
     tentativas += 1
-
+print('----------------------- MODO 2 -----------------------')
 
 while True:
 
@@ -50,7 +50,6 @@ while True:
                 caracter_especial = 1
 
 
-print('---------------- MODO 2 ----------------')
 
     total_atendidos = tem_8_digitos + maiuscula + minuscula + numero + caracter_especial
 
